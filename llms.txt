@@ -1,0 +1,105 @@
+# Integración de La Liga Tracker API con LLMs (Large Language Models)
+
+Este documento detalla cómo puedes utilizar nuestra API de La Liga Tracker con modelos de lenguaje grandes (LLMs) como ChatGPT, Claude o similares para crear aplicaciones más inteligentes.
+
+## Introducción
+
+La Liga Tracker API proporciona endpoints para gestionar partidos de fútbol. Al integrarlo con LLMs, puedes:
+- Generar resúmenes automáticos de partidos
+- Crear análisis predictivos
+- Implementar asistentes de voz para consultas sobre partidos
+- Generar contenido automático para redes sociales
+
+## Ejemplos de Prompts para LLMs
+
+### 1. Obtener y Resumir Partidos
+
+```
+Eres un asistente deportivo. Necesito que analices los siguientes datos de un partido de fútbol y generes un resumen breve y atractivo.
+
+Datos del partido:
+{
+  "id": 1,
+  "homeTeam": "Barcelona",
+  "awayTeam": "Real Madrid",
+  "matchDate": "2025-03-28T20:00:00Z",
+  "goals": 3,
+  "yellowCards": 4,
+  "redCards": 1,
+  "extraTime": true
+}
+```
+
+### 2. Generar Código para Integración
+
+```
+Genera código en Python para conectarse a La Liga Tracker API y obtener todos los partidos. Luego, crea una función que identifique los partidos más interesantes basándose en la cantidad de tarjetas y goles.
+
+La URL base de la API es: http://localhost:8080/api
+```
+
+## Ejemplo de Integración con Python
+
+```python
+import requests
+import openai
+
+# Configuración
+API_BASE_URL = "http://localhost:8080/api"
+OPENAI_API_KEY = "tu-api-key-aquí"
+
+# Inicializar cliente de OpenAI
+openai.api_key = OPENAI_API_KEY
+
+# Obtener datos de partidos
+def get_all_matches():
+    response = requests.get(f"{API_BASE_URL}/matches")
+    return response.json()
+
+# Generar resumen con GPT
+def generate_match_summary(match_data):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "Eres un comentarista deportivo experto."},
+            {"role": "user", "content": f"Genera un resumen breve del siguiente partido: {match_data}"}
+        ]
+    )
+    return response.choices[0].message.content
+
+# Ejemplo de uso
+matches = get_all_matches()
+for match in matches:
+    summary = generate_match_summary(match)
+    print(f"Resumen del partido {match['homeTeam']} vs {match['awayTeam']}:")
+    print(summary)
+    print("---")
+```
+
+## Estructura de los datos para LLMs
+
+Al interactuar con LLMs, asegúrate de proporcionar los datos de manera estructurada:
+
+- **Partido**: Objeto JSON con los campos `id`, `homeTeam`, `awayTeam`, `matchDate`, `goals`, `yellowCards`, `redCards`, `extraTime`.
+
+- **Formato de Fecha**: Las fechas siguen el formato ISO 8601 (`YYYY-MM-DDTHH:MM:SSZ`).
+
+## Casos de Uso Avanzados
+
+1. **Análisis Predictivo**: Entrenar un modelo que combine datos históricos con análisis de LLM para predecir resultados.
+   
+2. **Chatbot Deportivo**: Crear un asistente virtual especializado en estadísticas de La Liga.
+   
+3. **Generación de Contenido**: Automatizar la creación de artículos, tweets o publicaciones sobre partidos recientes.
+
+## Consideraciones y Limitaciones
+
+- Los LLMs pueden generar información incorrecta si no tienen datos actualizados.
+- Es recomendable complementar las respuestas de LLMs con datos reales de la API.
+- Para análisis en tiempo real, considera implementar websockets en lugar de consultas REST repetitivas.
+
+## Recursos Adicionales
+
+- [Documentación de OpenAI](https://platform.openai.com/docs/api-reference)
+- [Antropic Claude API](https://docs.anthropic.com/claude/reference/getting-started-with-the-api)
+- [Librerías de análisis deportivo para Python](https://pypi.org/project/sportsreference/)

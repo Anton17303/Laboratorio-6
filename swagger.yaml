@@ -1,0 +1,237 @@
+openapi: 3.0.0
+info:
+  title: La Liga Tracker API
+  description: API para seguimiento de partidos de fútbol
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Servidor local de desarrollo
+tags:
+  - name: Matches
+    description: Operaciones relacionadas con partidos de fútbol
+paths:
+  /matches:
+    get:
+      summary: Obtiene todos los partidos
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: Listado de partidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Match'
+    post:
+      summary: Crea un nuevo partido
+      tags:
+        - Matches
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchInput'
+      responses:
+        '201':
+          description: Partido creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '400':
+          description: Datos inválidos
+  /matches/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del partido
+    get:
+      summary: Obtiene un partido por su ID
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: Detalles del partido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '404':
+          description: Partido no encontrado
+    put:
+      summary: Actualiza un partido existente
+      tags:
+        - Matches
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchInput'
+      responses:
+        '200':
+          description: Partido actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '404':
+          description: Partido no encontrado
+    delete:
+      summary: Elimina un partido
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: Partido eliminado exitosamente
+        '404':
+          description: Partido no encontrado
+  /matches/{id}/goals:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del partido
+    patch:
+      summary: Registra un gol en el partido
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: Gol registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '404':
+          description: Partido no encontrado
+  /matches/{id}/yellowcards:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del partido
+    patch:
+      summary: Registra una tarjeta amarilla en el partido
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: Tarjeta amarilla registrada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '404':
+          description: Partido no encontrado
+  /matches/{id}/redcards:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del partido
+    patch:
+      summary: Registra una tarjeta roja en el partido
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: Tarjeta roja registrada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '404':
+          description: Partido no encontrado
+  /matches/{id}/extratime:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID del partido
+    patch:
+      summary: Establece tiempo extra en el partido
+      tags:
+        - Matches
+      responses:
+        '200':
+          description: Tiempo extra establecido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+        '404':
+          description: Partido no encontrado
+components:
+  schemas:
+    Match:
+      type: object
+      properties:
+        ID:
+          type: integer
+          description: Identificador único del partido
+        CreatedAt:
+          type: string
+          format: date-time
+          description: Fecha de creación del registro
+        UpdatedAt:
+          type: string
+          format: date-time
+          description: Fecha de última actualización
+        DeletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha de eliminación (soft delete)
+        homeTeam:
+          type: string
+          description: Nombre del equipo local
+        awayTeam:
+          type: string
+          description: Nombre del equipo visitante
+        matchDate:
+          type: string
+          format: date-time
+          description: Fecha programada del partido
+        goals:
+          type: integer
+          description: Número de goles en el partido
+        yellowCards:
+          type: integer
+          description: Número de tarjetas amarillas en el partido
+        redCards:
+          type: integer
+          description: Número de tarjetas rojas en el partido
+        extraTime:
+          type: boolean
+          description: Indica si el partido tuvo tiempo extra
+    MatchInput:
+      type: object
+      required:
+        - homeTeam
+        - awayTeam
+      properties:
+        homeTeam:
+          type: string
+          description: Nombre del equipo local
+        awayTeam:
+          type: string
+          description: Nombre del equipo visitante
+        matchDate:
+          type: string
+          format: date-time
+          description: Fecha programada del partido
